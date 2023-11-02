@@ -1,0 +1,9 @@
+CREATE DATABASE customers;
+USE customers;
+
+CREATE TABLE users(
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL, 
+    pwd VARCHAR(255) NOT NULL
+);
