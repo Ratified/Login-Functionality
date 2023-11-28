@@ -2,7 +2,7 @@
     include_once 'header.php';
 ?>
     
-    <form action="" method="post" class="grid justify-center mt-14 bg-green-200 w-1/2 mx-auto py-2 px-3">
+    <form action="includes/login.inc.php" method="post" class="grid justify-center mt-14 bg-green-200 w-1/2 mx-auto py-2 px-3">
         <h2 class="text-3xl text-center mb-5">LogIn</h2>
         <div class="flex flex-col gap-2">
             <label for="username">Username </label>

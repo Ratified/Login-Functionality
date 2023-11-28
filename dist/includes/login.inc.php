@@ -5,28 +5,42 @@
 
     include_once "db.inc.php";
 
-    $sql = "SELECT username, email, pwd FROM users WHERE username = ? AND email = ? AND pwd = ?";
+    // Validate and sanitize user input
+    $username = mysqli_real_escape_string($conn, $username);
+    $email = mysqli_real_escape_string($conn, $email);
+
+    $sql = "SELECT username, email, pwd FROM users WHERE username = ? OR email = ?";
     $stmt = mysqli_prepare($conn, $sql);
-    if($stmt){
-        $stmt -> bind_param('sss', $username, $email, $password);
-        $stmt -> execute();
+
+    if ($stmt) {
+        $stmt->bind_param('ss', $username, $email);
+        $stmt->execute();
         $result = mysqli_stmt_get_result($stmt);
 
-        if(mysqli_num_rows($result) > 0){
-            while($row = mysqli_fetch_assoc($result)){
-                $retrievedUsername = $row['username'];
-                $retrievedEmail = $row['email'];
-                $retrievedPassword = $row['pwd'];
+        if ($row = mysqli_fetch_assoc($result)) {
+            $retrievedUsername = $row['username'];
+            $retrievedEmail = $row['email'];
+            $retrievedPassword = $row['pwd'];
 
-                if($username === $retrievedUsername && $email === $retrievedEmail){
-                    if(password_verify($password, $retrievedPassword)){
-                        session_start();
-                        $_SESSION['username'] = $username;
-                        echo "<script>window.location.href = '../index.php';</script>";
-                    }
-                } else{
-                    echo "Invalid Username Or Email";
-                }
+            if (($username === $retrievedUsername || $email === $retrievedEmail) && password_verify($password, $retrievedPassword)) {
+                session_start();
+                $_SESSION['username'] = $retrievedUsername;
+                session_regenerate_id(); // Regenerate session ID to prevent session fixation
+                echo "Login Successful";
+                header("Location: ../index.php");
+                exit();
+            } else {
+                echo "Invalid Username Or Email";
             }
+        } else {
+            echo "Invalid Username Or Email";
         }
+
+        $stmt->close();
+    } else {
+        echo "Database error";
     }
+
+    mysqli_close($conn);
+?>
+
